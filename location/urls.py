@@ -1,8 +1,10 @@
 from django.urls import path, include
 from . import views
 
+
 urlpatterns = [
-    path('states/', views.get_state),
-    path('cities/', views.get_city)
+    path('state_list/', views.US_StateListView.as_view()),
+    path('states/', views.US_StateWithCityLlistView.as_view()),
+    path('states/<str:state_code>', views.US_StateWithCityDetailView.as_view())
 
 ]

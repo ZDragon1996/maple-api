@@ -17,4 +17,5 @@ class US_CITY(models.Model):
         max_digits=9, decimal_places=6, validators=[MinValueValidator(-90), MaxValueValidator(90)])
     longitude = models.DecimalField(
         max_digits=9, decimal_places=6, validators=[MinValueValidator(-180), MaxValueValidator(180)])
-    state = models.ForeignKey(US_State, on_delete=models.CASCADE)
+    state = models.ForeignKey(
+        US_State, on_delete=models.CASCADE, related_name='cities')
