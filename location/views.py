@@ -7,21 +7,43 @@ from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.throttling import ScopedRateThrottle
+from rest_framework.throttling import ScopedRateThrottle, UserRateThrottle
 from .models import US_State, US_CITY
 from .serializers import US_StateWithCitySerializer, US_StateSerializer
+from rest_framework.mixins import ListModelMixin
+from core.utils.utils import get_membership
 
 
-# /location/state_list : get
-class US_StateListView(ListAPIView):
-    throttle_scope = 'state_list'
+# /location/state_list or /location/list_state: get
+class CustomListAPIView(ListAPIView):
     throttle_classes = (ScopedRateThrottle,)
+
+    def get_throttles(self):
+        membership = get_membership(self.request)
+        if membership:
+            self.throttle_scope = membership
+            print(membership)
+        return super().get_throttles()
+
+
+class US_StateListView(CustomListAPIView):
+    def get_throttles(self):
+        return super().get_throttles()
 
     def get_queryset(self):
         return US_State.objects.prefetch_related('cities').all()
 
     def get_serializer_class(self):
         return US_StateSerializer
+
+    # def get_serializer_context(self):
+    #     valid_mm_token = valid_membership_token(self.request)
+    #     if valid_mm_token:
+    #         self.throttle_scope = 'state_list_g'
+    #         return {'membership_token': valid_mm_token}
+    #     else:
+    #         self.throttle_scope = 'state_list'
+    #     return None
 
     #pagination_class = PageNumberPagination
 
