@@ -1,7 +1,7 @@
-from email.policy import default
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib import admin
+from .utils import constants
 
 # Create your models here.
 
@@ -11,21 +11,21 @@ class User(AbstractUser):
     login_ip = models.GenericIPAddressField(null=False, default='0.0.0.0')
 
 
+class Membership(models.Model):
+    member_token = models.CharField(unique=True, max_length=255)
+    membership = models.CharField(
+        max_length=1, choices=constants.MEMBERSHIP_CHOICE, default=constants.MEMBERSHIP_STANDARD)
+    level = models.PositiveSmallIntegerField(default=1)
+
+    def __str__(self):
+        return f'{self.membership}({self.level}) - {self.member_token}'
+
+
 class Customer(models.Model):
-    MEMBERSHIP_STANDARD = 'S'
-    MEMBERSHIP_GOLD = 'G'
-    MEMBERSHIP_DIAMOND = 'D'
-    MEMBERSHIP_PREMIUM = 'P'
-    MEMBERSHIP_CHOICE = [
-        (MEMBERSHIP_STANDARD, 'Standard'),
-        (MEMBERSHIP_GOLD, 'Gold'),
-        (MEMBERSHIP_DIAMOND, 'Diamond'),
-        (MEMBERSHIP_PREMIUM, 'Premium')
-    ]
     phone = models.CharField(max_length=255)
     birth_date = models.DateField(null=True, blank=True)
-    membership = models.CharField(
-        max_length=1, choices=MEMBERSHIP_CHOICE, default=MEMBERSHIP_STANDARD)
+    membership = models.OneToOneField(
+        Membership, on_delete=models.CASCADE)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     @admin.display(ordering='user__first_name')

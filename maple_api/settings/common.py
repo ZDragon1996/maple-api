@@ -127,12 +127,15 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+        'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/day',
-        'user': '200/day',
-        'state_list': '200/day'
+        'anon': '2/day',
+        'user': '2/day',
+        'standard': '2/day',
+        'gold': '10000/day',
+        'diamond': '86400/day',
+        'premium': '10/second'
     }
 }
 

@@ -21,3 +21,8 @@ class UserAdmin(BaseUserAdmin):
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ['first_name', 'last_name',  'membership']
     list_editable = ['membership']
+
+
+@admin.register(models.Membership)
+class MembershipAdmin(admin.ModelAdmin):
+    list_display = ['member_token', 'membership', 'level']
