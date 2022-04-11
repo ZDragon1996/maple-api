@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404
 from core.models import Customer, Membership
 from . import constants
+import secrets
+import string
 
 
 def get_client_ip(request):
@@ -23,8 +25,12 @@ def get_membership(request) -> str:
     user_id = request.user.id
     member_token = request.META.get('HTTP_MAPLEMT')
 
-    # validate request membership token and user id
+    # vlidate request membership token and user id
     if not member_token:
+        # check level when membership token is not valid(works for login user without header)
+        level = Membership.objects.filter(customer__user_id=user_id)
+        if level:
+            return get_full_name(constants.MEMBERSHIP_LEVEL_CHOICE, level[0].level)
         return constants.MEMBERSHIP_STANDARD.lower()
 
     # skip db check if member token is empty
@@ -37,3 +43,7 @@ def get_membership(request) -> str:
     membership_full_name = get_full_name(
         constants.MEMBERSHIP_CHOICE, membership[0].membership)
     return membership_full_name
+
+
+def generate_membership_token():
+    return 'MT' + ''.join(secrets.choice(string.ascii_letters+string.digits) for i in range(20))

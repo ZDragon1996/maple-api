@@ -9,6 +9,7 @@ djangorestframework = "*"
 mysqlclient = "*"
 djoser = "*"
 djangorestframework-simplejwt = "*"
+drf-writable-nested = "*"
 
 [dev-packages]
 autopep8 = "*"

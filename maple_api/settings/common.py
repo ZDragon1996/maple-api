@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'core',
-    'location'
+    'location',
+    'transaction'
 ]
 
 MIDDLEWARE = [
@@ -117,9 +118,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
 
+PAYPALORDER = 'transaction.PaypalOrder'
 
 REST_FRAMEWORK = {
-    'PAGE_SIZE': 1,
+    # 'PAGE_SIZE': 1,
     'COERCE_DECIMAL_TO_STRING': False,
     'DEFAULT_AUTHENTICATION_CLASSES': (
 
@@ -130,9 +132,9 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '2/day',
-        'user': '2/day',
-        'standard': '2/day',
+        'anon': '20/day',
+        'user': '20/day',
+        'standard': '20/day',
         'gold': '10000/day',
         'diamond': '86400/day',
         'premium': '10/second'
