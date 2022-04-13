@@ -26,7 +26,7 @@ def get_membership(request) -> str:
     member_token = request.META.get('HTTP_MAPLEMT')
 
     # vlidate request membership token and user id
-    if not member_token:
+    if not member_token and user_id:
         # check level when membership token is not valid(works for login user without header)
         level = Membership.objects.filter(customer__user_id=user_id)
         if level:

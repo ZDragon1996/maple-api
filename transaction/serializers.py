@@ -4,6 +4,9 @@ from sys import maxsize
 from rest_framework import serializers
 from drf_writable_nested import WritableNestedModelSerializer
 from django.db import transaction
+
+from core.models import Customer
+from core.serializers import CustomerSerializer
 from . import models
 
 
@@ -53,3 +56,11 @@ class PaypalOrderSerializer(serializers.ModelSerializer):
             'payer_first_name', 'payer_last_name', 'payer_email_address',
             'links', 'purchase', 'status', 'create_time', 'update_time'
         ]
+
+
+class OrderSerializer(serializers.Serializer):
+    customer = CustomerSerializer(many=True)
+    class Meta:
+        model = models.Order
+        fields = ['created_at', 'order_status', 'customer', 'product']
+

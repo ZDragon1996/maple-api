@@ -132,9 +132,9 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '20/day',
-        'user': '20/day',
-        'standard': '20/day',
+        'anon': '2000/day',
+        'user': '2000/day',
+        'standard': '2000/day',
         'gold': '10000/day',
         'diamond': '86400/day',
         'premium': '10/second'
@@ -150,5 +150,15 @@ SIMPLE_JWT = {
 DJOSER = {
     'SERIALIZERS': {
         'user_create': 'core.serializers.UserCreateSerializer'
+    }
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }

@@ -10,6 +10,7 @@ mysqlclient = "*"
 djoser = "*"
 djangorestframework-simplejwt = "*"
 drf-writable-nested = "*"
+django-redis = "*"
 
 [dev-packages]
 autopep8 = "*"

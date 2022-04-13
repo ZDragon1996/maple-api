@@ -14,3 +14,4 @@ class PaypalView(ListCreateAPIView):
         return PaypalOrder.objects.all()
 
     serializer_class = PaypalOrderSerializer
+
