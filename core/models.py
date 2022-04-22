@@ -38,3 +38,9 @@ class Customer(models.Model):
 
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
+
+
+class CustomerImage(models.Model):
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='core/images')
