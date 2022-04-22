@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Customer
+from core.models import Customer, User
 from core.utils import constants
 # Create your models here.
 
@@ -34,6 +34,7 @@ class PaypalOrder(models.Model):
 
     create_time = models.DateTimeField()
     update_time = models.DateTimeField()
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
 
 
 # Link

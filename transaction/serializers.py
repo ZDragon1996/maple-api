@@ -1,6 +1,7 @@
 from operator import mod
 from statistics import mode
 from sys import maxsize
+from django.forms import CharField
 from rest_framework import serializers
 from drf_writable_nested import WritableNestedModelSerializer
 from django.db import transaction
@@ -45,22 +46,23 @@ class PaypalOrderSerializer(serializers.ModelSerializer):
                 models.PaypalLink.objects.create(
                     paypal_order=paypal_order, **link)
                 models.PaypalPurchase.objects.create(paypal_order=paypal_order,
-                                                                  **purchase)
+                                                     **purchase)
 
             return paypal_order
+    user_id = serializers.CharField()
 
     class Meta:
         model = models.PaypalOrder
         fields = [
             'order_id', 'intent', 'create_time', 'payer_country_code',
             'payer_first_name', 'payer_last_name', 'payer_email_address',
-            'links', 'purchase', 'status', 'create_time', 'update_time'
+            'links', 'purchase', 'status', 'create_time', 'update_time', 'user_id'
         ]
 
 
 class OrderSerializer(serializers.Serializer):
     customer = CustomerSerializer(many=True)
+
     class Meta:
         model = models.Order
         fields = ['created_at', 'order_status', 'customer', 'product']
-

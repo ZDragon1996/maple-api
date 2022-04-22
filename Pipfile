@@ -11,10 +11,18 @@ djoser = "*"
 djangorestframework-simplejwt = "*"
 drf-writable-nested = "*"
 django-redis = "*"
+pillow = "*"
+drf-nested-routers = "*"
+opencv-python = "*"
+pandas = "*"
+openpyxl = "*"
 
 [dev-packages]
 autopep8 = "*"
 django-debug-toolbar = "*"
+pytest = "*"
+pytest-django = "*"
+model-bakery = "*"
 
 [requires]
 python_version = "3.10"

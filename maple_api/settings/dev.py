@@ -26,3 +26,4 @@ DATABASES = {
         'PASSWORD': os.environ.get('DJANGO_MYSQL_DB_PASSWORD'),
     }
 }
+
