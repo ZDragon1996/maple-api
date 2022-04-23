@@ -18,8 +18,8 @@ class FileViewSet(ModelViewSet):
     http_method_names = ['post']
     serializer_class = FileSerializer
 
-    # def get_serializer_context(self):
-    #     return {'request': self.request}
+    def get_serializer_context(self):
+        return {'request': self.request}
 
     def create(self, request, *args, **kwargs):
         serializer = FileSerializer(data=request.data)
