@@ -1,6 +1,5 @@
 
 from rest_framework import status
-from rest_framework.test import APIClient
 import pytest
 from core.models import User
 from model_bakery import baker
@@ -10,26 +9,25 @@ from transaction.models import PaypalOrder
 
 @pytest.mark.django_db
 class TestPaypalTranscatoon:
-    def test_if_user_is_anonymouse_get_put_patch_delete_call_returns_401(self):
-        client = APIClient()
-
-        response_get = client.get('/api/transaction/paypal/', data={})
-        response_put = client.put('/api/transaction/paypal/', data={})
-        response_patch = client.patch('/api/transaction/paypal/', data={})
-        response_delete = client.delete('/api/transaction/paypal/', data={})
+    def test_if_user_is_anonymouse_get_put_patch_delete_call_returns_401(self, api_client):
+        response_get = api_client.get('/api/transaction/paypal/', data={})
+        response_put = api_client.put('/api/transaction/paypal/', data={})
+        response_patch = api_client.patch('/api/transaction/paypal/', data={})
+        response_delete = api_client.delete(
+            '/api/transaction/paypal/', data={})
 
         assert response_get.status_code == status.HTTP_401_UNAUTHORIZED
         assert response_put.status_code == status.HTTP_401_UNAUTHORIZED
         assert response_patch.status_code == status.HTTP_401_UNAUTHORIZED
         assert response_delete.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_if_user_is_authenticated_get_put_patch_delete_call_returns_405(self):
-        client = APIClient()
-        client.force_authenticate(user=User)
-        response_get = client.get('/api/transaction/paypal/', data={})
-        response_put = client.put('/api/transaction/paypal/', data={})
-        response_patch = client.patch('/api/transaction/paypal/', data={})
-        response_delete = client.delete('/api/transaction/paypal/', data={})
+    def test_if_user_is_authenticated_get_put_patch_delete_call_returns_405(self, api_client):
+        api_client.force_authenticate(user=User)
+        response_get = api_client.get('/api/transaction/paypal/', data={})
+        response_put = api_client.put('/api/transaction/paypal/', data={})
+        response_patch = api_client.patch('/api/transaction/paypal/', data={})
+        response_delete = api_client.delete(
+            '/api/transaction/paypal/', data={})
 
         assert response_get.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
         assert response_put.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
@@ -37,9 +35,8 @@ class TestPaypalTranscatoon:
         assert response_delete.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
     @pytest.mark.skip
-    def test_authenticated_user_create_paypal_order_returns_201(self):
-        client = APIClient()
-        client.force_authenticate(user=User)
+    def test_authenticated_user_create_paypal_order_returns_201(self, api_client):
+        api_client.force_authenticate(user=User)
         data = json.dumps({
             "order_id": "2L4450093E531022B",
             "intent": "CAPTURE",
@@ -81,7 +78,7 @@ class TestPaypalTranscatoon:
             "update_time": "2022-04-17T00:08:34Z"
         }, indent=2)
 
-        response_get = client.post(
+        response_get = api_client.post(
             '/api/transaction/paypal/', data=data)
 
         assert response_get.status_code == status.HTTP_201_CREATED
