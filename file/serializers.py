@@ -1,23 +1,43 @@
-from pyexpat import model
 from rest_framework import serializers
 from .models import File
-from .process_file import convert_csv2xlsx, handle_file_name, handle_file_size
+from .classes.csvfile import CSVFile
 
 
 class FileSerializer(serializers.ModelSerializer):
-    def get_converted_file(self, file):
-        return convert_csv2xlsx(file.file)
+    # class attribute
+    csv_file = None
 
-    def get_file_name(self, file):
-        return handle_file_name(file.file, '.xlsx')
+    def get_target_name(self, obj):
+        global csv_file
+        csv_file = CSVFile(obj.file, target_ext='.xlsx')
+        return csv_file.target_file_name
 
-    def get_file_size(self, file):
-        return handle_file_size(file.file)
+    def get_file_size(self, obj):
+        return csv_file.source_file_size
 
-    converted_file = serializers.SerializerMethodField()
-    file_name = serializers.SerializerMethodField()
+    def get_file_modified_time(self, obj):
+        return csv_file.source_file_mt_time
+
+    def get_converted_file(self, obj):
+        return csv_file.convert_csv2xlsx()
+
+    target_name = serializers.SerializerMethodField()
     file_size = serializers.SerializerMethodField()
+    file_modified_time = serializers.SerializerMethodField()
+    converted_file = serializers.SerializerMethodField()
 
     class Meta:
         model = File
-        fields = ['file_name', 'file_size', 'file', 'converted_file']
+        fields = ['target_name', 'file_size', 'file',
+                  'converted_file', 'file_modified_time']
+
+
+class CSV2TXTSerializer(FileSerializer):
+    def get_converted_file(self, obj):
+        return csv_file.convert_csv2txt()
+
+    def get_target_name(self, obj):
+        global csv_file
+
+        csv_file = CSVFile(obj.file, target_ext='.txt')
+        return csv_file.target_file_name
