@@ -16,6 +16,7 @@ drf-nested-routers = "*"
 opencv-python = "*"
 pandas = "*"
 openpyxl = "*"
+xlsxwriter = "*"
 
 [dev-packages]
 autopep8 = "*"

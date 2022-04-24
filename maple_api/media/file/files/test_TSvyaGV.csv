@@ -1,2 +1,0 @@
-id,purchase_reference_id,purchase_currency_code,purchase_amount,purhcase_description,payee_email,payee_merchant_id,shipping_full_name,shipping_street,shipping_state,shipping_city,shipping_zip,shipping_country_code,payment_id,payment_status,payment_currency_code,payment_amount,payment_final_capture,seller_protection_status,paypal_order_id
-1,default,USD,1.77,gold,sb-xpiih15253698@business.example.com,N3W3EZ6DRA6FJ,"John Doe","1 Main St",CA,"San Jose",95131,US,58S61528PP226894B,COMPLETED,USD,1.77,1,ELIGIBLE,1
