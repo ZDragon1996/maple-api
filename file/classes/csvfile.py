@@ -1,6 +1,7 @@
 from django.conf import settings
 from file.classes.file import File
 from xlsxwriter import Workbook
+from zipfile import ZipFile
 import pandas as pd
 import csv
 import os
@@ -11,7 +12,7 @@ class CSVFile(File):
     # ================================================
     # Pick conversion options for csv to xlsx
     # ================================================
-    def convert_csv2xlsx(self):
+    def convert_csv2xlsx(self) -> str:
         '''
         If the file delimiter is unknown or invalid delimiter count for the file, 
         uses the xlsx writer conversion approach; otherwise, 
@@ -48,21 +49,21 @@ class CSVFile(File):
 # ================================================
 #  csv to xlsx using pandas ExcelWriter
 # ================================================
-    def convert_csv2xlsx_pd(self):
+    def convert_csv2xlsx_pd(self) -> str:
         '''
         Using the pandas module to create DataFrame obj, and then 
         convert csv file to xlsx format.
         '''
         df = pd.read_csv(self.source_file_path)
         excel_writer = pd.ExcelWriter(self.target_file_path)
-        df.to_excel(excel_writer, index=False, engine='xlsxwriter')
+        df.to_excel(excel_writer, index=False, engine='openpyxl')
         excel_writer.save()
         return self.target_url_path
 
 # ==================
 #  csv to txt
 # ==================
-    def convert_csv2txt(self):
+    def convert_csv2txt(self) -> str:
         '''
         Read csv file and write the file in txt format.
         '''
@@ -72,3 +73,63 @@ class CSVFile(File):
         return os.path.join(
             settings.API_MEDIA_ROOT_URL, self.django_path.replace(
                 self.source_file_ext, self.target_file_ext))
+
+
+# =============================
+#  xlsx to csv using pandas
+# =============================
+
+    def convert_xlsx2csv(self) -> str:
+        '''
+        Using the pandas module using openpyxl,
+        convert xlsx file to csv format. If xlsx file contains more than one sheet, 
+        create multiple csv files and put them in a zip file.
+        '''
+        sheets_names = pd.ExcelFile(self.source_file_path).sheet_names
+        sheets_count = len(sheets_names)
+
+        zip_file_path = self.target_file_path.replace(
+            self.target_file_ext, '.zip')
+        zip_files = []
+
+        for sheet_name in sheets_names:
+            excel_df = pd.read_excel(
+                self.source_file_path, sheet_name=sheet_name, dtype=object, index_col=None, engine='openpyxl')
+
+            if sheets_count > 1:
+                file_path = self.target_file_path.replace(
+                    self.target_file_ext, f'_{sheet_name}{self.target_file_ext}')
+            else:
+                file_path = self.target_file_path
+
+            excel_df.to_csv(file_path, index=False, encoding='utf-8')
+            zip_files.append(file_path)
+
+        if sheets_count > 1:
+            with ZipFile(zip_file_path, 'w') as zipfile:
+                for file in zip_files:
+                    arcname = os.path.basename(file)
+                    zipfile.write(file, arcname=arcname)
+
+        if os.path.exists(zip_file_path):
+            return self.target_url_path.replace(
+                self.target_file_ext, '.zip')
+
+        return self.target_url_path
+
+
+# ================================
+#  xlsx to csv using xlsxwriter
+# ================================
+
+    def convert_xls2csv(self) -> str:
+        '''
+        Using the xlsxwriter module to create an excel file, and then read through
+        the xls file and write data in the excel file in csv format.
+        '''
+        excel_file = xlrd.open_workbook(self.source_file_path)
+        sheet = excel_file.sheet_by_index(0)
+        csv_writter = csv.writer(open(self.target_file_path, 'w', newline=""))
+        for row in range(sheet.nrows):
+            csv_writter.writerow(sheet.values(row))
+        return self.target_url_path

@@ -17,6 +17,7 @@ opencv-python = "*"
 pandas = "*"
 openpyxl = "*"
 xlsxwriter = "*"
+xlrd = "*"
 
 [dev-packages]
 autopep8 = "*"

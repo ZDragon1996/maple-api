@@ -38,6 +38,15 @@ class CSV2TXTSerializer(FileSerializer):
 
     def get_target_name(self, obj):
         global csv_file
-
         csv_file = CSVFile(obj.file, target_ext='.txt')
+        return csv_file.target_file_name
+
+class XLSX2CSVSerializer(FileSerializer):
+    def get_converted_file(self, obj):
+        return csv_file.convert_xlsx2csv()
+
+    def get_target_name(self, obj):
+        global csv_file
+
+        csv_file = CSVFile(obj.file, target_ext='.csv')
         return csv_file.target_file_name
