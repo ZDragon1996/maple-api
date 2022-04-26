@@ -23,4 +23,3 @@ class TestProcessFile:
 
         assert response.status_code == status.HTTP_201_CREATED
         assert xlsx_exists == True
-

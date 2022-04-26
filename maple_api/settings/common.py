@@ -137,11 +137,12 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/day',
-        'user': '2000/day',
+        'user': '100/day',
         'standard': '100/day',
         'gold': '1000/day',
         'diamond': '86400/day',
-        'premium': '10/second'
+        'premium': '10/second',
+        'file_limitation': '10/minute',
     }
 }
 

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import File
 from .classes.csvfile import CSVFile
+from .custom_decorators.decorators import handle_invalid_file
 
 
 class FileSerializer(serializers.ModelSerializer):
@@ -40,6 +41,7 @@ class CSV2TXTSerializer(FileSerializer):
         global csv_file
         csv_file = CSVFile(obj.file, target_ext='.txt')
         return csv_file.target_file_name
+
 
 class XLSX2CSVSerializer(FileSerializer):
     def get_converted_file(self, obj):

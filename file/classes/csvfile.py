@@ -1,10 +1,23 @@
 from django.conf import settings
+from rest_framework import status
+from rest_framework.exceptions import bad_request
+from rest_framework.response import Response
 from file.classes.file import File
+from file.custom_decorators.decorators import handle_invalid_file
 from xlsxwriter import Workbook
 from zipfile import ZipFile
+from pathlib import Path
 import pandas as pd
 import csv
 import os
+
+# ==============================
+# Validate Source File Type
+# ==============================
+
+
+def validate_source_file(file_name=None, expected_type=['.xlsx', '.xls']) -> bool:
+    return True if Path(file_name).suffix in expected_type else False
 
 
 class CSVFile(File):
@@ -74,11 +87,9 @@ class CSVFile(File):
             settings.API_MEDIA_ROOT_URL, self.django_path.replace(
                 self.source_file_ext, self.target_file_ext))
 
-
-# =============================
-#  xlsx to csv using pandas
-# =============================
-
+# ==========================================
+#  xlsx to csv or xls to csv using pandas
+# ==========================================
     def convert_xlsx2csv(self) -> str:
         '''
         Using the pandas module using openpyxl,
@@ -94,7 +105,7 @@ class CSVFile(File):
 
         for sheet_name in sheets_names:
             excel_df = pd.read_excel(
-                self.source_file_path, sheet_name=sheet_name, dtype=object, index_col=None, engine='openpyxl')
+                self.source_file_path, sheet_name=sheet_name, dtype=object, index_col=None)
 
             if sheets_count > 1:
                 file_path = self.target_file_path.replace(
@@ -115,21 +126,4 @@ class CSVFile(File):
             return self.target_url_path.replace(
                 self.target_file_ext, '.zip')
 
-        return self.target_url_path
-
-
-# ================================
-#  xlsx to csv using xlsxwriter
-# ================================
-
-    def convert_xls2csv(self) -> str:
-        '''
-        Using the xlsxwriter module to create an excel file, and then read through
-        the xls file and write data in the excel file in csv format.
-        '''
-        excel_file = xlrd.open_workbook(self.source_file_path)
-        sheet = excel_file.sheet_by_index(0)
-        csv_writter = csv.writer(open(self.target_file_path, 'w', newline=""))
-        for row in range(sheet.nrows):
-            csv_writter.writerow(sheet.values(row))
         return self.target_url_path
