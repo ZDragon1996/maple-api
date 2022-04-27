@@ -34,17 +34,17 @@ class TestFileClass:
 
     def test_get_file_deli_and_returns_str(self, file_func):
         empty_file = file_func(
-            django_path='file/files/file_test_location/empty_test.csv')
+            django_path='file/files/file_test_location/nodelete_empty_test.csv')
         comma_file = file_func(
-            django_path='file/files/file_test_location/comma_test.csv')
+            django_path='file/files/file_test_location/nodelete_comma_test.csv')
         pipe_file = file_func(
-            django_path='file/files/file_test_location/pipe_test.csv')
+            django_path='file/files/file_test_location/nodelete_pipe_test.csv')
         colon_file = file_func(
-            django_path='file/files/file_test_location/colon_test.csv')
+            django_path='file/files/file_test_location/nodelete_colon_test.csv')
         semicolon_file = file_func(
-            django_path='file/files/file_test_location/semicolon_test.csv')
+            django_path='file/files/file_test_location/nodelete_semicolon_test.csv')
         unknown_file = file_func(
-            django_path='file/files/file_test_location/unknown_test.csv')
+            django_path='file/files/file_test_location/nodelete_unknown_test.csv')
 
         empty_file_output = empty_file.get_file_deli()
         comma_file_output = comma_file.get_file_deli()
@@ -65,7 +65,7 @@ class TestFileClass:
         assert colon_file_output == ':'
         assert semicolon_file_output == ';'
         assert unknown_file_output == 'unknown'
-
+        
     def test_get_deli_count_returns_int(self, default_file_obj):
         empty_file_output = default_file_obj.get_deli_count('', ',')
         comma_file_output = default_file_obj.get_deli_count('a,b,c', ',')
@@ -90,11 +90,11 @@ class TestFileClass:
 
     def test_valid_deli_count_returns_bool(self, file_func):
         good_file = file_func(
-            django_path='file/files/file_test_location/good_test.csv')
+            django_path='file/files/file_test_location/nodelete_good_test.csv')
         bad_file = file_func(
-            django_path='file/files/file_test_location/inconsistent_test.csv')
+            django_path='file/files/file_test_location/nodelete_inconsistent_test.csv')
         empty_file = file_func(
-            django_path='file/files/file_test_location/empty_test.csv')
+            django_path='file/files/file_test_location/nodelete_empty_test.csv')
 
         good_file_output = good_file.valid_deli_count()
         bad_file_output = bad_file.valid_deli_count()

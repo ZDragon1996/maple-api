@@ -59,11 +59,12 @@ class US_StateWithCityLlistView(CustomListAPIView):
 # /api/location/states/<state_code>
 # ==============================================================
 class US_StateWithCityDetailView(CustomListAPIView):
-    # @method_decorator(cache_page(86400 * 30))
-    # def get(self, request, *args, **kwargs):
-    #     print(self.kwargs['state_code'])
-    #     return super().get(request, *args, **kwargs)
     serializer_class = US_StateWithCitySerializer
+
+    @method_decorator(cache_page(86400 * 30))
+    def get(self, request, *args, **kwargs):
+        print(self.kwargs['state_code'])
+        return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         print(self.kwargs['state_code'])

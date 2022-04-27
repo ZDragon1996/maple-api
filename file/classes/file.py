@@ -36,10 +36,9 @@ class File:
         self.target_url_path = os.path.join(
             settings.API_MEDIA_ROOT_URL, self.django_target_path)
 
-        # ===================================
-        # Get full path for source file
-        # ===================================
-
+# ===================================
+# Get full path for source file
+# ===================================
     def get_full_path(self) -> str:
         if os.name == 'nt':
             return os.path.join(self.media_root, self.django_path).replace('/', '\\')

@@ -1,16 +1,16 @@
 from rest_framework import serializers
 from .models import File
 from .classes.csvfile import CSVFile
-from .custom_decorators.decorators import handle_invalid_file
 
 
 class FileSerializer(serializers.ModelSerializer):
     # class attribute
     csv_file = None
+    target_ext = '.xlsx'
 
     def get_target_name(self, obj):
         global csv_file
-        csv_file = CSVFile(obj.file, target_ext='.xlsx')
+        csv_file = CSVFile(obj.file, target_ext=self.target_ext)
         return csv_file.target_file_name
 
     def get_file_size(self, obj):
@@ -33,22 +33,40 @@ class FileSerializer(serializers.ModelSerializer):
                   'converted_file', 'file_modified_time']
 
 
+class CSV2XLSXSerializer(FileSerializer):
+    pass
+
+
 class CSV2TXTSerializer(FileSerializer):
+    target_ext = '.txt'
+
     def get_converted_file(self, obj):
         return csv_file.convert_csv2txt()
 
-    def get_target_name(self, obj):
-        global csv_file
-        csv_file = CSVFile(obj.file, target_ext='.txt')
-        return csv_file.target_file_name
-
 
 class XLSX2CSVSerializer(FileSerializer):
+    target_ext = '.csv'
+
     def get_converted_file(self, obj):
-        return csv_file.convert_xlsx2csv()
+        return csv_file.convert_xlsx_or_xls2csv()
 
-    def get_target_name(self, obj):
-        global csv_file
 
-        csv_file = CSVFile(obj.file, target_ext='.csv')
-        return csv_file.target_file_name
+class XLS2XLSXSerializer(FileSerializer):
+    target_ext = '.xlsx'
+
+    def get_converted_file(self, obj):
+        return csv_file.convert_xls2xlsx()
+
+
+class TXT2CSVSerializer(FileSerializer):
+    target_ext = '.csv'
+
+    def get_converted_file(self, obj):
+        return csv_file.convert_txt2csv()
+
+
+class TXT2XLSXSerializer(FileSerializer):
+    target_ext = '.xlsx'
+
+    def get_converted_file(self, obj):
+        return csv_file.convert_txt2xlsx()
