@@ -1,6 +1,7 @@
 from django.conf import settings
 from pathlib import Path
 from datetime import datetime, timezone
+from file.custom_exceptions.exceptions import MaximumFileSizeException
 import csv
 import os
 
@@ -12,11 +13,12 @@ class File:
         self.media_root = media_root
 
         # file source
+        self.source_file_max_allowed = 1024 * 1024 * 200
         self.source_file_path = self.get_full_path()
-        self._source_path_obj = Path(self.source_file_path)
-        self.source_file_info = self._source_path_obj.stat()
-        self.source_file_ext = self._source_path_obj.suffix
-        self.source_file_name = self._source_path_obj.name
+        self.source_path_obj = Path(self.source_file_path)
+        self.source_file_info = self.source_path_obj.stat()
+        self.source_file_ext = self.source_path_obj.suffix
+        self.source_file_name = self.source_path_obj.name
         self.source_file_size = self.get_file_size(self.source_file_info)
         self.source_file_mt_time = self.get_file_mt_time()
 
@@ -24,15 +26,13 @@ class File:
         self.target_file_ext = target_ext
         self.target_file_path = self.source_file_path.replace(
             self.source_file_ext, self.target_file_ext)
+        self.target_path_obj = Path(self.target_file_path)
         self.target_file_name = self.get_target_file_name()
 
         # helper path
-        #self._file_root = os.path.dirname(self.get_full_path())
-        self._original_file_name = os.path.basename(self.get_full_path())
+
         self.django_target_path = self.django_path.replace(
             self.source_file_ext, self.target_file_ext)
-        self.target_file_media_full_path = os.path.join(
-            self.media_root, self.target_file_path)
         self.target_url_path = os.path.join(
             settings.API_MEDIA_ROOT_URL, self.django_target_path)
 
@@ -114,9 +114,13 @@ class File:
         '''
         Uses pathlib module to get file size info.
         Append the corresponding unit based on the calculation.
+        Raise 400 status code with MaximumFileSizeException
+        when file size is greater than 500MB
         Use format: 3.1f  EX: 300.0B or 101.2KB
         '''
         file_size = file_info.st_size
+        if file_size > self.source_file_max_allowed:
+            raise MaximumFileSizeException()
         units = ['B', 'KB', 'MB', 'GB', 'TB']
         for u in units:
             if abs(file_size) < 1024:
@@ -136,3 +140,11 @@ class File:
         file_mt_datetime = datetime.fromtimestamp(
             st_mtime, timezone.utc)
         return file_mt_datetime
+
+
+# =====================================
+# Generate any size of csv or txtfile
+# =====================================
+
+    def generate_file(self, type) -> bool:
+        pass
