@@ -1,5 +1,5 @@
 *.pyc
-/media/
+
 /static/
 /settings/prod.py
 /.vscode/

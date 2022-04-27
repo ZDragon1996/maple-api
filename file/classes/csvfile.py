@@ -1,9 +1,23 @@
 from django.conf import settings
+from rest_framework import status
+from rest_framework.exceptions import bad_request
+from rest_framework.response import Response
 from file.classes.file import File
+from file.custom_decorators.decorators import handle_invalid_file
 from xlsxwriter import Workbook
+from zipfile import ZipFile
+from pathlib import Path
 import pandas as pd
 import csv
 import os
+
+# ==============================
+# Validate Source File Type
+# ==============================
+
+
+def validate_source_file(file_name=None, expected_type=['.xlsx', '.xls']) -> bool:
+    return True if Path(file_name).suffix in expected_type else False
 
 
 class CSVFile(File):
@@ -11,7 +25,8 @@ class CSVFile(File):
     # ================================================
     # Pick conversion options for csv to xlsx
     # ================================================
-    def convert_csv2xlsx(self):
+    @handle_invalid_file
+    def convert_csv2xlsx(self) -> str:
         '''
         If the file delimiter is unknown or invalid delimiter count for the file, 
         uses the xlsx writer conversion approach; otherwise, 
@@ -48,21 +63,58 @@ class CSVFile(File):
 # ================================================
 #  csv to xlsx using pandas ExcelWriter
 # ================================================
-    def convert_csv2xlsx_pd(self):
+    def convert_csv2xlsx_pd(self) -> str:
         '''
         Using the pandas module to create DataFrame obj, and then 
         convert csv file to xlsx format.
         '''
         df = pd.read_csv(self.source_file_path)
         excel_writer = pd.ExcelWriter(self.target_file_path)
-        df.to_excel(excel_writer, index=False, engine='xlsxwriter')
+        df.to_excel(excel_writer, index=False, engine='openpyxl')
         excel_writer.save()
         return self.target_url_path
+
+# ================================================
+#  txt to csv or xlsx using pandas
+# ================================================
+    @handle_invalid_file
+    def _convert_txt2csv_or_xlsx(self, target='csv') -> str:
+        '''
+        Using the pandas module to create DataFrame obj, and then 
+        convert txt file to csv or xlsx format.
+        '''
+        df = pd.read_csv(self.source_file_path)
+        if target == '.csv':
+            df.to_csv(self.target_file_path, index=False)
+        elif target == '.xlsx':
+            df.to_excel(self.target_file_path, index=False)
+        return self.target_url_path
+
+# ==================
+#  txt to csv
+# ==================
+    @handle_invalid_file
+    def convert_txt2csv(self) -> str:
+        '''
+        Read txt file and write the file in csv format.
+        '''
+        return self._convert_txt2csv_or_xlsx(target='.csv')
+
+# ==================
+#  txt to xlsx
+# ==================
+    @handle_invalid_file
+    def convert_txt2xlsx(self) -> str:
+        '''
+        Read txt file and write the file in xlsx format.
+        '''
+        return self._convert_txt2csv_or_xlsx(target='.xlsx')
 
 # ==================
 #  csv to txt
 # ==================
-    def convert_csv2txt(self):
+    @handle_invalid_file
+    def convert_csv2txt(self) -> str:
         '''
         Read csv file and write the file in txt format.
         '''
@@ -72,3 +124,62 @@ class CSVFile(File):
         return os.path.join(
             settings.API_MEDIA_ROOT_URL, self.django_path.replace(
                 self.source_file_ext, self.target_file_ext))
+
+# ============================================
+#  xlsx to csv or xls to csv using pandas
+# ============================================
+    @handle_invalid_file
+    def _convert_xlsx2csv_or_xlsx(self, target='.csv') -> str:
+        '''
+        Using the pandas module using openpyxl,
+        convert xlsx file to csv format. If xlsx file contains more than one sheet, 
+        create multiple csv files and put them in a zip file.
+        '''
+        sheets_names = pd.ExcelFile(self.source_file_path).sheet_names
+        sheets_count = len(sheets_names)
+
+        zip_file_path = self.target_file_path.replace(
+            self.target_file_ext, '.zip')
+        zip_files = []
+
+        for sheet_name in sheets_names:
+            excel_df = pd.read_excel(
+                self.source_file_path, sheet_name=sheet_name, dtype=object, index_col=None)
+
+            if sheets_count > 1:
+                file_path = self.target_file_path.replace(
+                    self.target_file_ext, f'_{sheet_name}{self.target_file_ext}')
+            else:
+                file_path = self.target_file_path
+
+            if target == '.csv':
+                excel_df.to_csv(file_path, index=False, encoding='utf-8')
+            elif target == '.xlsx':
+                excel_df.to_excel(file_path, index=False, encoding='utf-8')
+            zip_files.append(file_path)
+
+        if sheets_count > 1:
+            with ZipFile(zip_file_path, 'w') as zipfile:
+                for file in zip_files:
+                    arcname = os.path.basename(file)
+                    zipfile.write(file, arcname=arcname)
+
+        if os.path.exists(zip_file_path):
+            return self.target_url_path.replace(
+                self.target_file_ext, '.zip')
+
+        return self.target_url_path
+
+# ============================================
+#  xlsx or xls to csv using pandas
+# ============================================
+    @handle_invalid_file
+    def convert_xlsx_or_xls2csv(self) -> str:
+        return self._convert_xlsx2csv_or_xlsx(target='.csv')
+
+# ============================================
+#  xls to xlsx using pandas
+# ============================================
+    @handle_invalid_file
+    def convert_xls2xlsx(self) -> str:
+        return self._convert_xlsx2csv_or_xlsx(target='.xlsx')

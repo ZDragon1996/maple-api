@@ -24,12 +24,12 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('api/', include('core.urls')),
-    path('api/', include('location.urls')),
+    path('api/core/', include('core.urls')),
+    path('api/location/', include('location.urls')),
     path('api/transaction/', include('transaction.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
-    path('api/', include('file.urls'))
+    path('api/file/', include('file.urls'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

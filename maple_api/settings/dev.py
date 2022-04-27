@@ -17,13 +17,23 @@ MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': os.environ.get('DJANGO_MYSQL_DB_NAME'),
+#         'HOST': 'localhost',
+#         'USER': 'root',
+#         'PASSWORD': os.environ.get('DJANGO_MYSQL_DB_PASSWORD'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get('DJANGO_MYSQL_DB_NAME'),
         'HOST': 'localhost',
-        'USER': 'root',
+        'USER': 'postgres',
+        'PORT': 5432,
         'PASSWORD': os.environ.get('DJANGO_MYSQL_DB_PASSWORD'),
     }
 }
-
