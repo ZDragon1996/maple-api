@@ -29,7 +29,8 @@ urlpatterns = [
     path('api/transaction/', include('transaction.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
-    path('api/file/', include('file.urls'))
+    path('api/file/', include('file.urls')),
+    path('api/image/', include('image.urls'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

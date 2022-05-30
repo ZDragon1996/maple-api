@@ -10,7 +10,6 @@ def handle_invalid_file(func):
             return func(*args, **kwargs)
         except:
             raise InvalidFileSizeException()
-
     return wrapper
 
 

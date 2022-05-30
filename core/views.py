@@ -31,33 +31,3 @@ class CustomerViewSet(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, Ge
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
-
-
-class CutomerImageViewSet(ModelViewSet):
-    serializer_class = ImageSerializer
-
-    def get_serializer_context(self):
-        return {'customer_id': self.kwargs['customer_pk']}
-
-    def get_queryset(self):
-        return CustomerImage.objects.filter(customer_id=self.kwargs['customer_pk'])
-
-    def create(self, request, *args, **kwargs):
-        print(os.path.join(
-            settings.BASE_DIR, 'media', 'core', 'images'))
-        path = os.path.join(
-            settings.BASE_DIR, 'media', 'core', 'images')
-
-        img = Image.open(os.path.join(path, 'test.png')).convert('RGBA')
-        img_data = img.getdata()
-
-        new_img_data = []
-        for item in img_data:
-            if item[0] == 255 and item[1] == 255 and item[2] == 255:
-                new_img_data.append((255, 255, 255, 0))
-            else:
-                new_img_data.append(item)
-
-        img.putdata(new_img_data)
-        img.save(os.path.join(path, 'new_img.png'), 'PNG')
-        return super().create(request, *args, **kwargs)

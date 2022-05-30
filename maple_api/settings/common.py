@@ -29,6 +29,12 @@ INTERNAL_IPS = [
     # ...
 ]
 
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,15 +46,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'djoser',
+    'corsheaders',
     'core',
     'location',
     'transaction',
-    'file'
+    'file',
+    'image'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -125,7 +134,7 @@ AUTH_USER_MODEL = 'core.User'
 PAYPALORDER = 'transaction.PaypalOrder'
 
 REST_FRAMEWORK = {
-    # 'PAGE_SIZE': 1,
+    'PAGE_SIZE': 10,
     'COERCE_DECIMAL_TO_STRING': False,
     'DEFAULT_AUTHENTICATION_CLASSES': (
 
@@ -138,11 +147,12 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/day',
         'user': '100/day',
-        'standard': '100/day',
+        'standard': '2/day',
         'gold': '1000/day',
         'diamond': '86400/day',
         'premium': '10/second',
         'file_limitation': '10/minute',
+        'image_limitation': '100/day'
     }
 }
 

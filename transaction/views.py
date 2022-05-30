@@ -14,10 +14,12 @@ from transaction.serializers import PaypalOrderSerializer
 from django.core import serializers
 from .models import PaypalOrder
 from core.utils import utils
-from copy import copy
-# Create your views here.
 
 
+# ==============================================================
+# HTTP Allow: POST
+# /api/transaction/paypal
+# ==============================================================
 class PaypalView(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = PaypalOrderSerializer

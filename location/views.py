@@ -45,6 +45,7 @@ class US_StateListView(CustomListAPIView):
 # /api/location/states_and_cities
 # ==============================================================
 class US_StateWithCityLlistView(CustomListAPIView):
+    pagination_class = PageNumberPagination
 
     @method_decorator(cache_page(86400 * 30))
     def get(self, request, *args, **kwargs):
@@ -68,4 +69,4 @@ class US_StateWithCityDetailView(CustomListAPIView):
 
     def get_queryset(self):
         print(self.kwargs['state_code'])
-        return get_list_or_404(US_State, state_code=self.kwargs['state_code'])
+        return get_list_or_404(US_State, state_code=self.kwargs['state_code'].upper())

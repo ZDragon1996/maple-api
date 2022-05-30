@@ -19,6 +19,7 @@ openpyxl = "*"
 xlsxwriter = "*"
 xlrd = "*"
 psycopg2 = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 autopep8 = "*"
